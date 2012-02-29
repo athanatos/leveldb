@@ -38,6 +38,7 @@ GOOGLE_PERFTOOLS_LDFLAGS=
 endif
 
 CFLAGS = -c -I. -I./include $(PORT_CFLAGS) $(PLATFORM_CFLAGS) $(OPT) $(SNAPPY_CFLAGS)
+CXXFLAGS = -c -I. -I./include $(PORT_CXXFLAGS) $(PLATFORM_CFLAGS) $(OPT) $(SNAPPY_CFLAGS)
 
 LDFLAGS += $(PLATFORM_LDFLAGS) $(SNAPPY_LDFLAGS) $(GOOGLE_PERFTOOLS_LDFLAGS)
 
@@ -107,6 +108,8 @@ LIBRARY = libleveldb.a
 MEMENVLIBRARY = libmemenv.a
 
 all: $(LIBRARY)
+install:
+distclean: clean
 
 check: $(PROGRAMS) $(TESTS)
 	for t in $(TESTS); do echo "***** Running $$t"; ./$$t || exit 1; done
@@ -193,9 +196,9 @@ IOSVERSION=$(shell defaults read /Developer/Platforms/iPhoneOS.platform/version 
 
 .cc.o:
 	mkdir -p ios-x86/$(dir $@)
-	$(SIMULATORROOT)/usr/bin/$(CXX) $(CFLAGS) -isysroot $(SIMULATORROOT)/SDKs/iPhoneSimulator$(IOSVERSION).sdk -arch i686 $< -o ios-x86/$@
+	$(SIMULATORROOT)/usr/bin/$(CXX) $(CXXFLAGS) -isysroot $(SIMULATORROOT)/SDKs/iPhoneSimulator$(IOSVERSION).sdk -arch i686 $< -o ios-x86/$@
 	mkdir -p ios-arm/$(dir $@)
-	$(DEVICEROOT)/usr/bin/$(CXX) $(CFLAGS) -isysroot $(DEVICEROOT)/SDKs/iPhoneOS$(IOSVERSION).sdk -arch armv6 -arch armv7 $< -o ios-arm/$@
+	$(DEVICEROOT)/usr/bin/$(CXX) $(CXXFLAGS) -isysroot $(DEVICEROOT)/SDKs/iPhoneOS$(IOSVERSION).sdk -arch armv6 -arch armv7 $< -o ios-arm/$@
 	lipo ios-x86/$@ ios-arm/$@ -create -output $@
 
 .c.o:
@@ -207,8 +210,8 @@ IOSVERSION=$(shell defaults read /Developer/Platforms/iPhoneOS.platform/version 
 
 else
 .cc.o:
-	$(CXX) $(CFLAGS) $< -o $@
+	$(CXX) $(CXXFLAGS) $< -o $@
 
 .c.o:
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CXXFLAGS) $< -o $@
 endif
